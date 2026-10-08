@@ -228,40 +228,62 @@
     return '<p class="foot">' + esc(T(plan.exact ? 'footer_exact' : 'footer_inexact', updated, when(plan.createdAt))) + '</p>';
   }
 
+  var MAP_W = 512;
+  var MAP_H = 288;
+  var TILE = 256;
+
+  /** Web Mercator pixel position of a point at a zoom level (the scheme OpenStreetMap tiles use). */
+  function mercator(lat, lng, zoom) {
+    var size = TILE * Math.pow(2, zoom);
+    var sin = Math.sin(lat * Math.PI / 180);
+    return [(lng + 180) / 360 * size, (0.5 - Math.log((1 + sin) / (1 - sin)) / (4 * Math.PI)) * size];
+  }
+
   /**
-   * A sketch of the day's route: start and stops in their real positions (north up), joined in
-   * visiting order. Drawn here, so it needs no map service. Tapping it opens the route in Google Maps.
+   * The day's route on an OpenStreetMap background: start and stops joined in visiting order.
+   * The map tiles are free and need no key. If they cannot be loaded, the stops still show on a
+   * plain background. Tapping the map opens the route in Google Maps.
    */
-  function sketch(plan, day, d) {
+  function routeMap(plan, day, d) {
     var pts = [];
     if (C.hasCoords({ lat: plan.startLat, lng: plan.startLng })) pts.push({ lat: plan.startLat, lng: plan.startLng, label: '' });
     day.stops.forEach(function (s, i) { if (C.hasCoords(s)) pts.push({ lat: s.lat, lng: s.lng, label: String(i + 1) }); });
     if (pts.length < 2) return '';
-    var W = 640;
-    var H = 300;
-    var PAD = 34;
-    var cos = Math.cos(pts[0].lat * Math.PI / 180);
-    var xs = pts.map(function (p) { return p.lng * cos; });
-    var ys = pts.map(function (p) { return p.lat; });
-    var minX = Math.min.apply(null, xs);
-    var maxX = Math.max.apply(null, xs);
-    var minY = Math.min.apply(null, ys);
-    var maxY = Math.max.apply(null, ys);
-    var scale = Math.min((W - 2 * PAD) / Math.max(maxX - minX, 1e-6), (H - 2 * PAD) / Math.max(maxY - minY, 1e-6));
-    var offX = (W - (maxX - minX) * scale) / 2;
-    var offY = (H - (maxY - minY) * scale) / 2;
-    var xy = pts.map(function (p, i) { return [offX + (xs[i] - minX) * scale, H - offY - (ys[i] - minY) * scale]; });
-    var svg = '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="' + esc(T('map_alt')) + '">' +
-      '<polyline class="path" points="' + xy.map(function (q) { return q[0].toFixed(1) + ',' + q[1].toFixed(1); }).join(' ') + '"/>';
-    pts.forEach(function (p, i) {
-      var q = xy[i];
-      if (!p.label) {
-        svg += '<circle class="start" cx="' + q[0].toFixed(1) + '" cy="' + q[1].toFixed(1) + '" r="9"/>';
-      } else {
-        svg += '<circle class="dot' + (d === SUN ? ' sun' : '') + '" cx="' + q[0].toFixed(1) + '" cy="' + q[1].toFixed(1) + '" r="17"/>' +
-          '<text x="' + q[0].toFixed(1) + '" y="' + (q[1] + 7).toFixed(1) + '">' + p.label + '</text>';
+    var PAD = 30;
+    // The closest zoom at which every point fits inside the picture.
+    var zoom = 16;
+    var xy, minX, maxX, minY, maxY;
+    for (; zoom >= 3; zoom--) {
+      xy = pts.map(function (p) { return mercator(p.lat, p.lng, zoom); });
+      minX = Math.min.apply(null, xy.map(function (q) { return q[0]; }));
+      maxX = Math.max.apply(null, xy.map(function (q) { return q[0]; }));
+      minY = Math.min.apply(null, xy.map(function (q) { return q[1]; }));
+      maxY = Math.max.apply(null, xy.map(function (q) { return q[1]; }));
+      if (maxX - minX <= MAP_W - 2 * PAD && maxY - minY <= MAP_H - 2 * PAD) break;
+    }
+    var x0 = (minX + maxX) / 2 - MAP_W / 2;
+    var y0 = (minY + maxY) / 2 - MAP_H / 2;
+    var svg = '<svg viewBox="0 0 ' + MAP_W + ' ' + MAP_H + '" role="img" aria-label="' + esc(T('map_alt')) + '">';
+    var count = Math.pow(2, zoom);
+    for (var tx = Math.floor(x0 / TILE); tx * TILE < x0 + MAP_W; tx++) {
+      for (var ty = Math.floor(y0 / TILE); ty * TILE < y0 + MAP_H; ty++) {
+        if (ty < 0 || ty >= count) continue;
+        svg += '<image class="tile" href="https://tile.openstreetmap.org/' + zoom + '/' + ((tx % count + count) % count) + '/' + ty +
+          '.png" x="' + (tx * TILE - x0).toFixed(1) + '" y="' + (ty * TILE - y0).toFixed(1) + '" width="' + TILE + '" height="' + TILE + '"/>';
       }
-    });
+    }
+    var at = xy.map(function (q) { return [(q[0] - x0).toFixed(1), (q[1] - y0).toFixed(1)]; });
+    svg += '<polyline class="path-edge" points="' + at.map(function (q) { return q.join(','); }).join(' ') + '"/>' +
+      '<polyline class="path" points="' + at.map(function (q) { return q.join(','); }).join(' ') + '"/>';
+    // Drawn last to first, so stop 1 ends up on top where stops overlap.
+    for (var i = pts.length - 1; i >= 0; i--) {
+      if (!pts[i].label) {
+        svg += '<circle class="start" cx="' + at[i][0] + '" cy="' + at[i][1] + '" r="8"/>';
+      } else {
+        svg += '<circle class="dot' + (d === SUN ? ' sun' : '') + '" cx="' + at[i][0] + '" cy="' + at[i][1] + '" r="14"/>' +
+          '<text x="' + at[i][0] + '" y="' + (Number(at[i][1]) + 6).toFixed(1) + '">' + pts[i].label + '</text>';
+      }
+    }
     return svg + '</svg>';
   }
 
@@ -294,8 +316,11 @@
       '<p class="soft">' + esc(day.distanceM > 0 ? T('cycling', Fmt.duration(day.travelSec), Fmt.distance(day.distanceM))
         : T('cycling_no_distance', Fmt.duration(day.travelSec))) + '</p>' +
       '<p class="small" style="margin-top:6px">' + esc(T('summary_times', Fmt.time(day.leaveStart), Fmt.time(last.leave))) + '</p>';
-    var picture = settings.showMap ? sketch(plan, day, d) : '';
-    if (picture) h += '<a class="map" href="' + esc(route) + '" target="_blank" rel="noopener">' + picture + '</a>';
+    var picture = settings.showMap ? routeMap(plan, day, d) : '';
+    if (picture) {
+      h += '<a class="map" href="' + esc(route) + '" target="_blank" rel="noopener">' + picture + '</a>' +
+        '<p class="credit">' + esc(T('map_credit')) + ' <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a></p>';
+    }
     h += '<div class="actions"><a class="btn-outline" href="' + esc(route) + '" target="_blank" rel="noopener">' + ICON.map +
       esc(T('open_in_maps')) + '</a><button type="button" class="btn-text" data-act="share" data-day="' + d + '">' + esc(T('share')) +
       '</button></div></section>';

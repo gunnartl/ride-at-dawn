@@ -97,11 +97,14 @@ p { margin: 0; }
 
 .map { display: block; width: 100%; margin-top: 16px; border-radius: 14px; background: var(--map); overflow: hidden; }
 .map svg { display: block; width: 100%; height: auto; }
-.map .path { fill: none; stroke: var(--ink); stroke-width: 4; stroke-linejoin: round; stroke-linecap: round; opacity: 0.55; }
-.map .start { fill: var(--paper); stroke: var(--ink); stroke-width: 4; }
-.map .dot { fill: var(--sat); stroke: var(--sat-edge); stroke-width: 2; }
-.map .dot.sun { fill: var(--sun); stroke: var(--sun-edge); }
-.map text { font: 400 21px "Permanent Marker", "Schibsted Grotesk", sans-serif; fill: var(--on-sticker); text-anchor: middle; }
+.map .path-edge { fill: none; stroke: #fff; stroke-width: 7; stroke-linejoin: round; stroke-linecap: round; opacity: 0.85; }
+.map .path { fill: none; stroke: #16203A; stroke-width: 3.5; stroke-linejoin: round; stroke-linecap: round; }
+.map .start { fill: #fff; stroke: #16203A; stroke-width: 4; }
+.map .dot { fill: var(--sat); stroke: #16203A; stroke-width: 2; }
+.map .dot.sun { fill: var(--sun); }
+.map text { font: 800 17px "Schibsted Grotesk", system-ui, sans-serif; fill: var(--on-sticker); text-anchor: middle; }
+.credit { margin-top: 4px; font-size: 11px; color: var(--ink-soft); text-align: right; }
+@media (prefers-color-scheme: dark) { .map .tile { filter: brightness(0.82); } }
 .actions { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; margin-top: 12px; }
 
 /* ---------------------------------------------------------------- timetable */

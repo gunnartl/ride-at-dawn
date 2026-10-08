@@ -28,7 +28,7 @@
     day_none_fit: 'No more markets can be reached on {0} when starting at {1}.',
     cycling: '{0} of cycling, {1}', cycling_no_distance: '{0} of cycling',
     summary_times: 'Leave at {0}. Last stop until {1}.',
-    open_in_maps: 'Open route in Google Maps', share: 'Share', copied: 'Copied', map_alt: 'Sketch of the route, north up',
+    open_in_maps: 'Open route in Google Maps', share: 'Share', copied: 'Copied', map_alt: 'Map of the route', map_credit: 'Map \u00a9',
     start_from_location: 'Leave from your location', start_from_address: 'Leave from {0}',
     start_latest: 'Leave by {0} at the latest',
     leg: '{0} by bike, {1}', leg_no_distance: '{0} by bike', leg_estimated: 'About {0} by bike (estimate)',
@@ -61,7 +61,7 @@
     s_plan_sat: 'Plan Saturday', s_plan_sun: 'Plan Sunday',
     s_visits: 'Visits', s_service: 'Minutes at each market', s_min_last: 'Minutes needed at the last market of the day',
     s_cycling: 'Cycling', s_bike_pct: 'Bike time in % of Google’s estimate', s_buffer: 'Extra minutes per ride (parking, locking)',
-    s_map: 'Show a sketch of each day\u2019s route'
+    s_map: 'Show a map of each day\u2019s route'
   };
 
   var nb = {
@@ -89,7 +89,7 @@
     day_none_fit: 'Ingen flere markeder rekkes {0} med start {1}.',
     cycling: '{0} på sykkel, {1}', cycling_no_distance: '{0} på sykkel',
     summary_times: 'Dra {0}. Siste stopp til {1}.',
-    open_in_maps: 'Åpne ruten i Google Maps', share: 'Del', copied: 'Kopiert', map_alt: 'Skisse av ruten, nord opp',
+    open_in_maps: 'Åpne ruten i Google Maps', share: 'Del', copied: 'Kopiert', map_alt: 'Kart over ruten', map_credit: 'Kart \u00a9',
     start_from_location: 'Dra fra der du er', start_from_address: 'Dra fra {0}',
     start_latest: 'Dra senest {0}',
     leg: '{0} på sykkel, {1}', leg_no_distance: '{0} på sykkel', leg_estimated: 'Omtrent {0} p\u00e5 sykkel (anslag)',
@@ -122,7 +122,7 @@
     s_plan_sat: 'Planlegg lørdag', s_plan_sun: 'Planlegg søndag',
     s_visits: 'Besøk', s_service: 'Minutter på hvert marked', s_min_last: 'Minutter som trengs på dagens siste marked',
     s_cycling: 'Sykling', s_bike_pct: 'Sykkeltid i % av Googles anslag', s_buffer: 'Ekstra minutter per tur (parkering, låsing)',
-    s_map: 'Vis en skisse av ruten for hver dag'
+    s_map: 'Vis kart over ruten for hver dag'
   };
 
   var lang = (root.navigator && root.navigator.language || 'nb').toLowerCase();

@@ -66,8 +66,8 @@ Google Cloud and keep a low daily quota.
 
 - Fits in as many markets as possible over Saturday and Sunday: 60 minutes at each, inside the
   opening hours, no market on both days.
-- Shows each day as a timetable with a sketch of the route, a Google Maps link with every stop,
-  and Share.
+- Shows each day as a timetable with a map of the route (OpenStreetMap, free, no key), a Google
+  Maps link with every stop, and Share.
 - Under All markets you can tick markets as Visited, Skip, Must on Saturday or Must on Sunday.
 - The start is where you are, or an address typed on the line above the Plan button.
 - Norwegian or English, following the phone's language. Follows dark mode.
@@ -99,6 +99,6 @@ for the end-to-end check. Location works on `localhost` and on https, not on pla
 
 - At most 30 markets in one plan.
 - Friday openings are ignored.
-- The sketch shows the stops in their real positions, north up, without a background map.
+- The map joins the stops with straight lines; the real route is in the Google Maps link.
 - Fonts: Schibsted Grotesk (SIL Open Font License 1.1) and Permanent Marker (Apache License 2.0),
   licence texts in `fonts/`.
