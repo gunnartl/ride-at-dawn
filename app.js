@@ -7,7 +7,6 @@
   var SUN = C.SUN;
   var Fmt = C.Fmt;
   var STALE_MS = 3 * 3600 * 1000;
-  var TILT = [-7, 5, -3, 8, -6, 4];
 
   var S = {
     target: 0,          // the coming weekend's Saturday (yyyymmdd)
@@ -355,7 +354,7 @@
       }
       if (market) market.notes.forEach(function (n) { lines += '<p class="note">' + esc(n) + '</p>'; });
       h += '<div class="row' + (isLast ? ' last' : '') + '"><div class="time"><b>' + Fmt.time(s.begin) + '</b><span>' + Fmt.time(s.leave) + '</span></div>' +
-        '<div class="rail"><span class="sticker' + (d === SUN ? ' sun' : '') + '" style="transform:rotate(' + TILT[i % TILT.length] + 'deg)">' + (i + 1) + '</span></div>' +
+        '<div class="rail"><span class="sticker' + (d === SUN ? ' sun' : '') + '">' + (i + 1) + '</span></div>' +
         '<div class="body"><h3>' + esc(s.name) + '</h3>' + lines +
         '<div class="stop-actions"><a class="btn-small" target="_blank" rel="noopener" href="' + esc(C.MapsLinks.directionsTo(C.MapsLinks.stopPoint(s))) + '">' +
         ICON.nav + esc(T('navigate')) + '</a>' + check('visited', s.marketId, visited.indexOf(s.marketId) >= 0, T('visited'), '') +
@@ -388,7 +387,7 @@
       var pos = S.plan ? C.PlanBuilder.find(S.plan, x.id) : null;
       h += '<article class="market"><h3>' + esc(x.name) + '</h3>';
       if (pos) {
-        h += '<span class="sticker' + (pos[0] === SUN ? ' sun' : '') + '" style="transform:rotate(' + TILT[(pos[1] - 1) % TILT.length] + 'deg)">' + pos[1] + '</span>';
+        h += '<span class="sticker' + (pos[0] === SUN ? ' sun' : '') + '">' + pos[1] + '</span>';
       }
       if (x.organizer) h += '<p class="soft">' + esc(x.organizer) + '</p>';
       if (pos) h += '<p class="status">' + esc(T('in_plan', dayName(pos[0]), pos[1])) + '</p>';
