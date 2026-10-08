@@ -1,0 +1,14 @@
+{
+  "name": "Ride at Dawn",
+  "short_name": "Ride at Dawn",
+  "description": "Plans a bike route through as many Oslo flea markets as possible over the weekend.",
+  "start_url": ".",
+  "scope": ".",
+  "display": "standalone",
+  "background_color": "#16203A",
+  "theme_color": "#16203A",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}

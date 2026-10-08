@@ -1,0 +1,65 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Ride at Dawn end-to-end check</title>
+<!-- Drives the real app in a frame: waits for the market data, plans from a typed start address and
+     prints the result as text. Open test/e2e.html (optionally #start=Address&must=Market name)
+     from a local web server. Uses Kartverket's address lookup for the start; no key involved. -->
+<pre id="out">running</pre>
+<iframe id="app" style="width:420px;height:800px;border:1px solid #888"></iframe>
+<script>
+(function () {
+  var out = document.getElementById('out');
+  var params = {};
+  location.hash.replace(/^#/, '').split('&').forEach(function (kv) {
+    var i = kv.indexOf('=');
+    if (i > 0) params[kv.substring(0, i)] = decodeURIComponent(kv.substring(i + 1));
+  });
+  localStorage.setItem('rideatdawn.start', JSON.stringify(params.start || 'Jernbanetorget 1, 0154 Oslo'));
+  ['plan', 'marks', 'flag'].forEach(function (p) {
+    Object.keys(localStorage).forEach(function (k) { if (k.indexOf('rideatdawn.' + p + '.') === 0) localStorage.removeItem(k); });
+  });
+  var frame = document.getElementById('app');
+  frame.src = '../index.html';
+  var started = false;
+  var t0 = Date.now();
+  var timer = setInterval(function () {
+    var app = frame.contentWindow && frame.contentWindow.RideAtDawn;
+    if (!app) return;
+    var S = app.state;
+    var C = frame.contentWindow.Core;
+    if (!started && S.markets.length && !S.loading) {
+      started = true;
+      if (params.must) {
+        S.markets.forEach(function (m) {
+          if (m.name === params.must) {
+            frame.contentWindow.Data.Store.saveMarks(S.saturday, { visited: [], skip: [], must: [[m.id], []] });
+          }
+        });
+      }
+      app.startPlanning();
+      return;
+    }
+    var failed = Date.now() - t0 > 90000 || (started && !S.busy && S.error);
+    if (started && !S.busy && S.plan || failed) {
+      clearInterval(timer);
+      var lines = [failed ? 'FAILED: ' + (S.error || S.loadError || 'timeout') : 'DONE'];
+      lines.push('weekend ' + S.saturday + ', ' + S.markets.length + ' markets');
+      S.markets.forEach(function (m) {
+        lines.push('  ' + m.name + ' | ' + C.hoursText(m, 0) + ' | ' + C.hoursText(m, 1) + ' | ' + m.address);
+      });
+      if (S.plan) {
+        S.plan.warnings.forEach(function (w) { lines.push('warning: ' + w); });
+        S.plan.days.forEach(function (d) {
+          lines.push('day ' + d.day + ': ' + d.stops.length + ' stops, cycling ' + d.travelSec + ' s, ' + d.distanceM + ' m');
+          d.stops.forEach(function (s, i) {
+            lines.push('  ' + (i + 1) + '. ' + C.Fmt.time(s.begin) + '-' + C.Fmt.time(s.leave) + ' ' + s.name + ' (leg ' + s.legSec + ' s' + (s.legEstimated ? ' EST' : '') + ')');
+          });
+          lines.push('  ' + C.MapsLinks.dayRoute(S.plan, d));
+        });
+      }
+      out.textContent = lines.join('\n');
+      document.title = 'finished';
+    }
+  }, 250);
+})();
+</script>
