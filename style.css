@@ -3,7 +3,6 @@
 @font-face { font-family: "Schibsted Grotesk"; src: url("fonts/schibsted_regular.ttf") format("truetype"); font-weight: 400; font-display: swap; }
 @font-face { font-family: "Schibsted Grotesk"; src: url("fonts/schibsted_bold.ttf") format("truetype"); font-weight: 700; font-display: swap; }
 @font-face { font-family: "Schibsted Grotesk"; src: url("fonts/schibsted_extrabold.ttf") format("truetype"); font-weight: 800; font-display: swap; }
-@font-face { font-family: "Permanent Marker"; src: url("fonts/permanent_marker.ttf") format("truetype"); font-display: swap; }
 
 :root {
   --paper: #EEF1F4; --card: #FFFFFF; --ink: #16203A; --ink-soft: #535D72; --line: #D5DBE3;
@@ -120,7 +119,7 @@ p { margin: 0; }
 .sticker {
   position: relative; margin-top: 4px; width: 42px; height: 42px; border-radius: 50%; display: grid; place-items: center;
   background: var(--sat); border: 1.5px solid var(--sat-edge); color: var(--on-sticker);
-  font: 400 21px/1 "Permanent Marker", "Schibsted Grotesk", sans-serif;
+  font: 800 19px/1 "Schibsted Grotesk", system-ui, sans-serif;
 }
 .sticker.sun { background: var(--sun); border-color: var(--sun-edge); }
 .bike { position: relative; align-self: center; width: 26px; height: 26px; border-radius: 50%; background: var(--paper); display: grid; place-items: center; }
@@ -142,7 +141,7 @@ label.check.plain input { accent-color: var(--ink-soft); }
 /* ---------------------------------------------------------------- all markets */
 .market { position: relative; margin: 0 max(20px, env(safe-area-inset-right)) 0 max(20px, env(safe-area-inset-left)); padding: 18px 0 10px; border-bottom: 1px solid var(--line); }
 .market h3 { margin: 0; padding-right: 52px; font-size: 20px; font-weight: 700; overflow-wrap: anywhere; }
-.market .sticker { position: absolute; right: 0; top: 14px; width: 38px; height: 38px; font-size: 19px; margin: 0; }
+.market .sticker { position: absolute; right: 0; top: 14px; width: 38px; height: 38px; font-size: 17px; margin: 0; }
 .market .status { font-weight: 700; margin-top: 6px; font-size: 15px; }
 .market .hours { margin-top: 6px; }
 .checks { display: flex; flex-wrap: wrap; align-items: center; gap: 0 14px; margin-top: 6px; }

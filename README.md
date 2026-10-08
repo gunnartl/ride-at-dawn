@@ -100,5 +100,4 @@ for the end-to-end check. Location works on `localhost` and on https, not on pla
 - At most 30 markets in one plan.
 - Friday openings are ignored.
 - The map joins the stops with straight lines; the real route is in the Google Maps link.
-- Fonts: Schibsted Grotesk (SIL Open Font License 1.1) and Permanent Marker (Apache License 2.0),
-  licence texts in `fonts/`.
+- Font: Schibsted Grotesk (SIL Open Font License 1.1), licence text in `fonts/`.
