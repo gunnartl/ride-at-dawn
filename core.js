@@ -546,14 +546,19 @@
   // Per day: breadth-first search by number of stops, keeping for each (set, last market) the
   // Pareto front of (begin time, travel time). The days are then combined exactly.
   // Market sets are bit masks in a JS integer, so at most 30 markets.
+  //
+  // Objective, in order: most must-visits on their day, most markets, fewest days on the bike
+  // (everything on one day when it fits, Saturday if either day does), most days where the last
+  // stop gets the full visit, least travel time.
 
   var COUNT_W = 1e9;
+  var DAY_W = 1e7;
   var FULL_W = 1e6;
   var MUST_W = 1e12;
   var MAX_MARKETS = 30;
 
   var Solver = {
-    COUNT_W: COUNT_W, FULL_W: FULL_W, MUST_W: MUST_W, MAX_MARKETS: MAX_MARKETS,
+    COUNT_W: COUNT_W, DAY_W: DAY_W, FULL_W: FULL_W, MUST_W: MUST_W, MAX_MARKETS: MAX_MARKETS,
     labelLimit: 250000,
     sosLimit: 20,
 
@@ -583,7 +588,7 @@
     value: function (p, d, l) {
       if (!l) return 0;
       var full = l.begin + p.service <= p.close[d][l.last];
-      return l.count * COUNT_W + (full ? FULL_W : 0) - l.travel;
+      return l.count * COUNT_W - DAY_W + (full ? FULL_W : 0) - l.travel;
     },
 
     /** The day's value plus a bonus per must-visit market on the route (see the Android Solver). */
@@ -704,7 +709,8 @@
         bestB = bm[full];
         sat.forEach(function (l, a) {
           var v = Solver.weekendValue(p, SAT, l) + bv[full & ~a];
-          if (v > bestVal) {
+          // On a tie the plan with Saturday stops wins over the Sunday-only one found first.
+          if (v > bestVal || (v === bestVal && bestA === 0)) {
             bestVal = v;
             bestA = a;
             bestB = bm[full & ~a];
@@ -791,7 +797,7 @@
       s.leg.forEach(function (x) { travel += x; });
       var last = order[order.length - 1];
       var full = s.begin[order.length - 1] + p.service <= p.close[d][last];
-      return order.length * COUNT_W + (full ? FULL_W : 0) - travel;
+      return order.length * COUNT_W - DAY_W + (full ? FULL_W : 0) - travel;
     }
   };
 

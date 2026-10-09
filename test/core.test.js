@@ -140,6 +140,39 @@ function testSolver() {
   ok(forced > 10, 'must marks changed the plan in some instances (' + forced + ')');
 }
 
+function testOneDay() {
+  // Four markets close together, open 10-16 both days: all of them fit in one day.
+  var n = 4;
+  var p = Solver.problem(n);
+  var i, j;
+  for (i = 0; i <= n; i++) for (j = 0; j <= n; j++) p.travel[i][j] = i === j ? 0 : 600;
+  for (i = 0; i < n; i++) {
+    p.open[0][i] = p.open[1][i] = t('10:00');
+    p.close[0][i] = p.close[1][i] = t('16:00');
+  }
+  p.departure[0] = p.departure[1] = t('09:00');
+  [20, 0].forEach(function (limit) {
+    Solver.sosLimit = limit;
+    var s = Solver.solve(p);
+    eq([4, 0], [s.days[0].order.length, s.days[1].order.length], 'all fit in a day: Saturday only, sos=' + limit);
+    p.close[0][3] = -1;
+    p.open[0][3] = -1;
+    s = Solver.solve(p);
+    eq([0, 4], [s.days[0].order.length, s.days[1].order.length], 'one closed on Saturday: Sunday only, sos=' + limit);
+    p.open[0][3] = t('10:00');
+    p.close[0][3] = t('16:00');
+    // Too many for one day: both days are used.
+    p.close[0][0] = p.close[1][0] = t('12:00');
+    p.close[0][1] = p.close[1][1] = t('12:00');
+    p.close[0][2] = p.close[1][2] = t('12:00');
+    s = Solver.solve(p);
+    eq(4, s.days[0].order.length + s.days[1].order.length, 'still visits all four over two days, sos=' + limit);
+    ok(s.days[0].order.length > 0 && s.days[1].order.length > 0, 'uses both days when one is not enough, sos=' + limit);
+    p.close[0][0] = p.close[1][0] = p.close[0][1] = p.close[1][1] = p.close[0][2] = p.close[1][2] = t('16:00');
+  });
+  Solver.sosLimit = 20;
+}
+
 function testPerformance() {
   var r = rng(7);
   [11, 16, 20, 24].forEach(function (n) {
@@ -275,6 +308,7 @@ testWeekends();
 testLinks();
 testPlan();
 testSolver();
+testOneDay();
 testPerformance();
 console.log('core tests: ' + checks + ' checks, ' + failures + ' failures');
 process.exit(failures > 0 ? 1 : 0);

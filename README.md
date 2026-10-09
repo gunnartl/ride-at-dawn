@@ -76,6 +76,8 @@ Google Cloud og ha en lav daglig kvote.
 
 - Får med flest mulig markeder over lørdag og søndag: 60 minutter på hvert, innenfor
   åpningstidene, og ingen markeder begge dager.
+- Bruker bare én dag når alle markedene rekkes på én dag (lørdag hvis begge går), og deler dem
+  over to dager først når det gir flere markeder.
 - Viser hver dag som en rutetabell med kart over ruten (OpenStreetMap, gratis, ingen nøkkel), en
   Google Maps-lenke med alle stoppene, og Del.
 - Under Alle markeder kan du huke av markeder som Besøkt, Hopp over, Må med lørdag eller
