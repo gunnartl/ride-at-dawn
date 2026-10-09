@@ -1,4 +1,4 @@
-// Ride at Dawn: user-facing text in Norwegian, English, German and Danish.
+// Ride at Dawn: user-facing text in Norwegian, English, German, Danish and Latin.
 // The language is the one chosen in Settings, otherwise the browser's, otherwise English.
 // T('key', a, b) fills {0}, {1} ...
 (function (root) {
@@ -248,8 +248,69 @@
     s_map: 'Vis kort over ruten for hver dag', s_language: 'Sprog'
   };
 
-  var DICTS = { nb: nb, en: en, de: de, da: da };
-  var NAMES = [['nb', 'Norsk'], ['en', 'English'], ['de', 'Deutsch'], ['da', 'Dansk']];
+  var la = {
+    months: ['Ianuarii', 'Februarii', 'Martii', 'Aprilis', 'Maii', 'Iunii', 'Iulii', 'Augusti', 'Septembris', 'Octobris', 'Novembris', 'Decembris'],
+    hour_unit: 'h', decimal: ',',
+    date: '{0} {1}', range_same: '{0}–{1} {2}', range_two: '{0} – {1}',
+    weekend: 'Finis hebdomadis {0}', weekend_option: '{0} ({1})',
+    saturday: 'Dies Saturni', sunday: 'Dies Solis', saturday_in: 'die Saturni', sunday_in: 'die Solis',
+    tab_day: '{0} {1}', tab_all: 'Omnes mercatus',
+    refresh: 'Data mercatuum iterum arcesse', settings: 'Optiones',
+    n_markets_1: '1 mercatus', n_markets: '{0} mercatus',
+    plan_route: 'Iter para', plan_again: 'Iter denuo para',
+    start_line_location: 'Initium: ubi ero cum iter parabo', start_line_address: 'Initium: {0}',
+    start_title: 'Unde proficisceris?', start_hint: 'Via et numerus, Oslo',
+    start_help: 'Utroque die adhibetur. Vacuum relinque ut inde proficiscaris ubi eris cum iter parabis.',
+    start_use_location: 'Loco meo utere', save: 'Serva', cancel: 'Omitte', close: 'Claude',
+    loading: 'Mercatus arcessuntur…', load_failed: 'Data mercatuum arcessi non potuerunt ({0}).', try_again: 'Iterum tempta',
+    no_weekends: 'Nulli fines hebdomadis futuri cum mercatibus in datis sunt. Fortasse renovanda sunt.',
+    other_weekend: 'Proximo fine hebdomadis nulli mercatus nuntiati sunt; hic est proximus qui aliquos habet.',
+    empty_title: 'Nondum iter',
+    empty_body: 'Patent {1}: {0}. Iter para ut quam plurimos birota adeas, {2} minutis in singulis.',
+    day_none_title: 'Nihil paratum',
+    day_past: '{0} praeteriit.', day_disabled: 'Iter {0} in Optionibus exclusisti.',
+    day_none_open: 'Nulli mercatus supersunt qui {0} pateant.',
+    day_none_fit: 'Nulli plures mercatus {0} adiri possunt, si hora {1} proficisceris.',
+    cycling: '{0} birota, {1}', cycling_no_distance: '{0} birota',
+    summary_times: 'Proficiscere hora {0}. Ultima statio usque ad {1}.',
+    open_in_maps: 'Iter in Google Maps aperi', share: 'Communica', copied: 'Exscriptum', map_alt: 'Tabula itineris', map_credit: 'Tabula ©',
+    start_from_location: 'Proficiscere a loco tuo', start_from_address: 'Proficiscere ex: {0}',
+    start_latest: 'Proficiscere non post horam {0}',
+    leg: '{0} birota, {1}', leg_no_distance: '{0} birota', leg_estimated: 'Circiter {0} birota (aestimatio)',
+    open_hours: 'Patet {0}', wait: 'Hora {0} advenis et {1} exspectas dum aperiatur.',
+    leave_by: 'Discede non post horam {0} ut consilium serves.',
+    last_short: 'Ultima statio: {0} hic antequam hora {1} claudatur.', last_full: 'Ultima statio: mane dum hora {0} claudatur.',
+    navigate: 'Duc me', visited: 'Visitatus', skip: 'Praetermitte', must_sat: 'Necesse die Saturni', must_sun: 'Necesse die Solis',
+    markets_intro: 'Mercatus quos visitatos notas omittuntur cum iter denuo paras. Praetermissi numquam in iter veniunt. Necessarius primum in itinere eius diei ponitur, deinde ceteri adduntur.',
+    in_plan: '{0}, statio {1}', not_in_plan: 'Non in itinere',
+    hours_day: '{0} {1}', closed_day: '{0} clausus', hours_missing: 'Horae non inventae. Preme Emenda ut eas inscribas.',
+    address_missing: 'Inscriptio non inventa. Preme Emenda ut eam inscribas.', edited: 'A te mutatum',
+    edit: 'Emenda', web_page: 'Pagina interretialis', edit_title: 'Emenda: {0}', edit_sat: 'Horae die Saturni', edit_sun: 'Horae die Solis',
+    edit_hours_hint: '10:00-16:00, vacuum = clausus', edit_address: 'Inscriptio', use_web_page: 'Paginae interretialis data adhibe',
+    invalid_hours: 'Scribe horas velut 10:00-16:00, aut vacuum relinque si clausus est.',
+    footer_exact: 'Tempora birotae inter mercatus ex Google Maps sunt, arcessita {0}. Itinera ab initio tuo aestimata sunt. Paratum {1}.',
+    footer_inexact: 'Tempora birotae inter mercatus ex Google Maps sunt, arcessita {0}. Itinera ab initio tuo aestimata sunt. Paratum {1}. Multi mercatus sunt, itaque iter fortasse non optimum est.',
+    stale: 'Notae vel optiones mutatae sunt postquam hoc iter paratum est.',
+    status_locating: 'Locus tuus quaeritur…', status_addresses: 'Inscriptiones quaeruntur…', status_solving: 'Iter optimum quaeritur…',
+    your_location: 'Locus tuus',
+    err_no_days: 'Uterque dies praeteriit aut exclusus est; nihil parandum est.',
+    err_nothing: 'Nulli mercatus parandi supersunt: omnes visitati, praetermissi aut clausi sunt.',
+    err_network: '{0} attingi non potuit. Conexionem inspice et iterum tempta.',
+    err_location: 'Locus tuus inveniri non potuit ({0}). Inscriptionem initii scribe.', err_address: 'Inscriptio «{0}» inventa non est. Tempta viam et numerum, exempli gratia Storgata 1, Oslo.',
+    warn_hours_missing: 'Omissi quia horae ignotae sunt: {0}.',
+    warn_too_many: 'Nimis multi mercatus uni itineri; soli primi {0} considerati sunt.',
+    warn_no_location: 'Nulla inscriptio pro {0}; omissus est.',
+    warn_must_missed: 'Non potuit {0} includi, quamquam necessarium notavisti: {1}.',
+    auto_visited: 'Stationes {0} die Saturni paratae visitatae notatae sunt. Sub Omnes mercatus notam tolle iis quas praetermisisti.',
+    s_days: 'Dies et horae', s_leave_sat: 'Non ante proficiscendum, die Saturni', s_leave_sun: 'Non ante proficiscendum, die Solis',
+    s_plan_sat: 'Para diem Saturni', s_plan_sun: 'Para diem Solis',
+    s_visits: 'Visitationes', s_service: 'Minuta in singulis mercatibus', s_min_last: 'Minuta necessaria in ultimo mercatu diei',
+    s_cycling: 'Birota', s_bike_pct: 'Tempus birotae, % aestimationis Google', s_buffer: 'Minuta addita in singula itinera (statio, sera)',
+    s_map: 'Ostende tabulam itineris cuiusque diei', s_language: 'Lingua'
+  };
+
+  var DICTS = { nb: nb, en: en, de: de, da: da, la: la };
+  var NAMES = [['nb', 'Norsk'], ['en', 'English'], ['de', 'Deutsch'], ['da', 'Dansk'], ['la', 'Latina']];
   var STORE_KEY = 'rideatdawn.lang';
 
   function saved() {
@@ -265,6 +326,7 @@
     if (/^(nb|nn|no)\b/.test(l)) return 'nb';
     if (/^da\b/.test(l)) return 'da';
     if (/^de\b/.test(l)) return 'de';
+    if (/^la\b/.test(l)) return 'la';
     return 'en';
   }
 
