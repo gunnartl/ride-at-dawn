@@ -1,4 +1,5 @@
-// Ride at Dawn: user-facing text. Norwegian when the browser prefers it, otherwise English.
+// Ride at Dawn: user-facing text in Norwegian, English, German and Danish.
+// The language is the one chosen in Settings, otherwise the browser's, otherwise English.
 // T('key', a, b) fills {0}, {1} ...
 (function (root) {
   'use strict';
@@ -61,7 +62,7 @@
     s_plan_sat: 'Plan Saturday', s_plan_sun: 'Plan Sunday',
     s_visits: 'Visits', s_service: 'Minutes at each market', s_min_last: 'Minutes needed at the last market of the day',
     s_cycling: 'Cycling', s_bike_pct: 'Bike time in % of Google’s estimate', s_buffer: 'Extra minutes per ride (parking, locking)',
-    s_map: 'Show a map of each day\u2019s route'
+    s_map: 'Show a map of each day\u2019s route', s_language: 'Language'
   };
 
   var nb = {
@@ -122,12 +123,152 @@
     s_plan_sat: 'Planlegg lørdag', s_plan_sun: 'Planlegg søndag',
     s_visits: 'Besøk', s_service: 'Minutter på hvert marked', s_min_last: 'Minutter som trengs på dagens siste marked',
     s_cycling: 'Sykling', s_bike_pct: 'Sykkeltid i % av Googles anslag', s_buffer: 'Ekstra minutter per tur (parkering, låsing)',
-    s_map: 'Vis kart over ruten for hver dag'
+    s_map: 'Vis kart over ruten for hver dag', s_language: 'Språk'
   };
 
-  var lang = (root.navigator && root.navigator.language || 'nb').toLowerCase();
-  var norwegian = /^(nb|nn|no)\b/.test(lang);
-  var dict = norwegian ? nb : en;
+  var de = {
+    months: ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'],
+    hour_unit: 'Std.', decimal: ',',
+    date: '{0}. {1}', range_same: '{0}.–{1}. {2}', range_two: '{0} – {1}',
+    weekend: 'Wochenende {0}', weekend_option: '{0} ({1})',
+    saturday: 'Samstag', sunday: 'Sonntag', saturday_in: 'Samstag', sunday_in: 'Sonntag',
+    tab_day: '{0} {1}.', tab_all: 'Alle Märkte',
+    refresh: 'Marktdaten neu laden', settings: 'Einstellungen',
+    n_markets_1: '1 Markt', n_markets: '{0} Märkte',
+    plan_route: 'Route planen', plan_again: 'Neu planen',
+    start_line_location: 'Start: wo ich beim Planen bin', start_line_address: 'Start: {0}',
+    start_title: 'Wo startest du?', start_hint: 'Straße und Hausnummer, Oslo',
+    start_help: 'Gilt für beide Tage. Leer lassen, um dort zu starten, wo du beim Planen bist.',
+    start_use_location: 'Meinen Standort verwenden', save: 'Speichern', cancel: 'Abbrechen', close: 'Schließen',
+    loading: 'Märkte werden geladen…', load_failed: 'Die Marktdaten konnten nicht geladen werden ({0}).', try_again: 'Erneut versuchen',
+    no_weekends: 'Keine kommenden Wochenenden mit Märkten in den Daten. Vielleicht müssen sie aktualisiert werden.',
+    other_weekend: 'Für das kommende Wochenende sind keine Märkte eingetragen. Dies ist das nächste mit Märkten.',
+    empty_title: 'Noch keine Route',
+    empty_body: 'Am {1} geöffnet: {0}. Plane die Route, um mit dem Rad möglichst viele zu schaffen, mit {2} Minuten pro Markt.',
+    day_none_title: 'Nichts geplant',
+    day_past: '{0} ist vorbei.', day_disabled: 'Du hast die Planung für {0} in den Einstellungen ausgeschaltet.',
+    day_none_open: 'Keine Märkte mehr, die am {0} geöffnet haben.',
+    day_none_fit: 'Am {0} sind mit Start um {1} keine weiteren Märkte erreichbar.',
+    cycling: '{0} auf dem Rad, {1}', cycling_no_distance: '{0} auf dem Rad',
+    summary_times: 'Abfahrt {0}. Letzter Halt bis {1}.',
+    open_in_maps: 'Route in Google Maps öffnen', share: 'Teilen', copied: 'Kopiert', map_alt: 'Karte der Route', map_credit: 'Karte ©',
+    start_from_location: 'Abfahrt von deinem Standort', start_from_address: 'Abfahrt von {0}',
+    start_latest: 'Spätestens um {0} losfahren',
+    leg: '{0} mit dem Rad, {1}', leg_no_distance: '{0} mit dem Rad', leg_estimated: 'Etwa {0} mit dem Rad (Schätzung)',
+    open_hours: 'Geöffnet {0}', wait: 'Du kommst um {0} an und wartest {1} bis zur Öffnung.',
+    leave_by: 'Spätestens um {0} losfahren, damit der Plan hält.',
+    last_short: 'Letzter Halt: {0} hier, bevor um {1} geschlossen wird.', last_full: 'Letzter Halt: bleib, bis um {0} geschlossen wird.',
+    navigate: 'Navigieren', visited: 'Besucht', skip: 'Auslassen', must_sat: 'Muss am Samstag', must_sun: 'Muss am Sonntag',
+    markets_intro: 'Als besucht markierte Märkte werden beim nächsten Planen weggelassen. Ausgelassene Märkte werden nie eingeplant. Ein Muss kommt zuerst auf die Route des Tages, danach wird der Rest eingepasst.',
+    in_plan: '{0}, Halt {1}', not_in_plan: 'Nicht im Plan',
+    hours_day: '{0} {1}', closed_day: '{0} geschlossen', hours_missing: 'Öffnungszeiten nicht gefunden. Tippe auf Bearbeiten, um sie einzutragen.',
+    address_missing: 'Adresse nicht gefunden. Tippe auf Bearbeiten, um sie einzutragen.', edited: 'Von dir geändert',
+    edit: 'Bearbeiten', web_page: 'Webseite', edit_title: '{0} bearbeiten', edit_sat: 'Öffnungszeit Samstag', edit_sun: 'Öffnungszeit Sonntag',
+    edit_hours_hint: '10:00-16:00, leer = geschlossen', edit_address: 'Adresse', use_web_page: 'Angaben der Webseite verwenden',
+    invalid_hours: 'Schreibe Zeiten wie 10:00-16:00 oder lass das Feld für geschlossen leer.',
+    footer_exact: 'Die Radzeiten zwischen den Märkten stammen von Google Maps, abgerufen am {0}. Fahrten von deinem Start sind Schätzungen. Geplant {1}.',
+    footer_inexact: 'Die Radzeiten zwischen den Märkten stammen von Google Maps, abgerufen am {0}. Fahrten von deinem Start sind Schätzungen. Geplant {1}. Bei so vielen Märkten ist der Plan vielleicht nicht der allerbeste.',
+    stale: 'Markierungen oder Einstellungen haben sich geändert, seit dieser Plan erstellt wurde.',
+    status_locating: 'Standort wird ermittelt…', status_addresses: 'Adressen werden gesucht…', status_solving: 'Die beste Route wird gesucht…',
+    your_location: 'Dein Standort',
+    err_no_days: 'Beide Tage sind vorbei oder ausgeschaltet, es gibt also nichts zu planen.',
+    err_nothing: 'Keine Märkte mehr zu planen: alle sind besucht, ausgelassen oder geschlossen.',
+    err_network: 'Keine Verbindung zu {0}. Prüfe deine Internetverbindung und versuche es erneut.',
+    err_location: 'Dein Standort konnte nicht ermittelt werden ({0}). Gib stattdessen eine Startadresse ein.', err_address: 'Die Adresse „{0}“ wurde nicht gefunden. Versuche Straße und Hausnummer, zum Beispiel Storgata 1, Oslo.',
+    warn_hours_missing: 'Weggelassen, weil die Öffnungszeiten unbekannt sind: {0}.',
+    warn_too_many: 'Zu viele Märkte für einen Plan, daher wurden nur die ersten {0} berücksichtigt.',
+    warn_no_location: 'Keine Adresse für {0}, daher weggelassen.',
+    warn_must_missed: 'Passte am {0} nicht hinein, obwohl du es als Muss markiert hast: {1}.',
+    auto_visited: 'Die {0} geplanten Halte vom Samstag wurden als besucht markiert. Entferne unter Alle Märkte den Haken bei denen, die du ausgelassen hast.',
+    s_days: 'Tage und Zeiten', s_leave_sat: 'Frühestens losfahren, Samstag', s_leave_sun: 'Frühestens losfahren, Sonntag',
+    s_plan_sat: 'Samstag planen', s_plan_sun: 'Sonntag planen',
+    s_visits: 'Besuche', s_service: 'Minuten pro Markt', s_min_last: 'Nötige Minuten am letzten Markt des Tages',
+    s_cycling: 'Radfahren', s_bike_pct: 'Radzeit in % von Googles Schätzung', s_buffer: 'Zusätzliche Minuten pro Fahrt (Abstellen, Abschließen)',
+    s_map: 'Karte der Route für jeden Tag anzeigen', s_language: 'Sprache'
+  };
+
+  var da = {
+    months: ['januar', 'februar', 'marts', 'april', 'maj', 'juni', 'juli', 'august', 'september', 'oktober', 'november', 'december'],
+    hour_unit: 't', decimal: ',',
+    date: '{0}. {1}', range_same: '{0}.–{1}. {2}', range_two: '{0} – {1}',
+    weekend: 'Weekenden {0}', weekend_option: '{0} ({1})',
+    saturday: 'Lørdag', sunday: 'Søndag', saturday_in: 'lørdag', sunday_in: 'søndag',
+    tab_day: '{0} {1}.', tab_all: 'Alle markeder',
+    refresh: 'Hent markedsdata igen', settings: 'Indstillinger',
+    n_markets_1: '1 marked', n_markets: '{0} markeder',
+    plan_route: 'Planlæg ruten', plan_again: 'Planlæg igen',
+    start_line_location: 'Start: hvor jeg er, når jeg planlægger', start_line_address: 'Start: {0}',
+    start_title: 'Hvor starter du?', start_hint: 'Gade og nummer, Oslo',
+    start_help: 'Bruges begge dage. Lad feltet stå tomt for at starte, hvor du er, når du planlægger.',
+    start_use_location: 'Brug min position', save: 'Gem', cancel: 'Annuller', close: 'Luk',
+    loading: 'Henter markeder…', load_failed: 'Kunne ikke hente markedsdata ({0}).', try_again: 'Prøv igen',
+    no_weekends: 'Ingen kommende weekender med markeder i dataene. De skal måske opdateres.',
+    other_weekend: 'Der er ingen markeder i den kommende weekend, så dette er den næste, der har nogen.',
+    empty_title: 'Ingen rute endnu',
+    empty_body: '{0} har åbent {1}. Planlæg ruten for at nå flest muligt på cykel, med {2} minutter hvert sted.',
+    day_none_title: 'Intet planlagt',
+    day_past: '{0} er forbi.', day_disabled: 'Du har slået planlægning fra for {0} i Indstillinger.',
+    day_none_open: 'Ingen markeder tilbage, der har åbent {0}.',
+    day_none_fit: 'Ingen flere markeder kan nås {0} med start {1}.',
+    cycling: '{0} på cykel, {1}', cycling_no_distance: '{0} på cykel',
+    summary_times: 'Tag afsted {0}. Sidste stop til {1}.',
+    open_in_maps: 'Åbn ruten i Google Maps', share: 'Del', copied: 'Kopieret', map_alt: 'Kort over ruten', map_credit: 'Kort ©',
+    start_from_location: 'Tag afsted fra hvor du er', start_from_address: 'Tag afsted fra {0}',
+    start_latest: 'Tag afsted senest {0}',
+    leg: '{0} på cykel, {1}', leg_no_distance: '{0} på cykel', leg_estimated: 'Omkring {0} på cykel (skøn)',
+    open_hours: 'Åbent {0}', wait: 'Du er fremme {0} og venter {1}, til det åbner.',
+    leave_by: 'Tag afsted senest {0} for at holde planen.',
+    last_short: 'Sidste stop: {0} her, før det lukker {1}.', last_full: 'Sidste stop: bliv, til det lukker {0}.',
+    navigate: 'Naviger', visited: 'Besøgt', skip: 'Spring over', must_sat: 'Skal med lørdag', must_sun: 'Skal med søndag',
+    markets_intro: 'Markeder, du markerer som besøgt, kommer ikke med, når du planlægger igen. Markeder, du springer over, planlægges aldrig. Et skal-marked lægges først ind på den dags rute, før resten fyldes på.',
+    in_plan: '{0}, stop {1}', not_in_plan: 'Ikke med i planen',
+    hours_day: '{0} {1}', closed_day: '{0} lukket', hours_missing: 'Fandt ingen åbningstider. Tryk på Rediger for at skrive dem ind.',
+    address_missing: 'Fandt ingen adresse. Tryk på Rediger for at skrive den ind.', edited: 'Ændret af dig',
+    edit: 'Rediger', web_page: 'Hjemmeside', edit_title: 'Rediger {0}', edit_sat: 'Åbningstid lørdag', edit_sun: 'Åbningstid søndag',
+    edit_hours_hint: '10:00-16:00, tomt = lukket', edit_address: 'Adresse', use_web_page: 'Brug hjemmesidens',
+    invalid_hours: 'Skriv tider som 10:00-16:00, eller lad feltet stå tomt for lukket.',
+    footer_exact: 'Cykeltiderne mellem markederne er fra Google Maps, hentet {0}. Ture fra dit startpunkt er skøn. Planlagt {1}.',
+    footer_inexact: 'Cykeltiderne mellem markederne er fra Google Maps, hentet {0}. Ture fra dit startpunkt er skøn. Planlagt {1}. Mange markeder, så planen er måske ikke den allerbedste.',
+    stale: 'Markeringer eller indstillinger er ændret, siden planen blev lavet.',
+    status_locating: 'Finder din position…', status_addresses: 'Slår adresser op…', status_solving: 'Finder den bedste rute…',
+    your_location: 'Din position',
+    err_no_days: 'Begge dage er forbi eller slået fra, så der er intet at planlægge.',
+    err_nothing: 'Ingen markeder tilbage at planlægge: alle er besøgt, sprunget over eller lukket.',
+    err_network: 'Kunne ikke få forbindelse til {0}. Tjek din internetforbindelse, og prøv igen.',
+    err_location: 'Kunne ikke finde din position ({0}). Skriv en startadresse i stedet.', err_address: 'Fandt ikke adressen »{0}«. Prøv gade og nummer, for eksempel Storgata 1, Oslo.',
+    warn_hours_missing: 'Udeladt, fordi åbningstiderne er ukendte: {0}.',
+    warn_too_many: 'For mange markeder til én plan, så kun de første {0} blev taget med.',
+    warn_no_location: 'Ingen adresse for {0}, så det blev udeladt.',
+    warn_must_missed: 'Kunne ikke nås {0}, selvom du markerede det som et skal: {1}.',
+    auto_visited: 'Lørdagens {0} planlagte stop er markeret som besøgt. Fjern fluebenet under Alle markeder for dem, du sprang over.',
+    s_days: 'Dage og tider', s_leave_sat: 'Tag tidligst afsted, lørdag', s_leave_sun: 'Tag tidligst afsted, søndag',
+    s_plan_sat: 'Planlæg lørdag', s_plan_sun: 'Planlæg søndag',
+    s_visits: 'Besøg', s_service: 'Minutter på hvert marked', s_min_last: 'Minutter, der kræves på dagens sidste marked',
+    s_cycling: 'Cykling', s_bike_pct: 'Cykeltid i % af Googles skøn', s_buffer: 'Ekstra minutter pr. tur (parkering, låsning)',
+    s_map: 'Vis kort over ruten for hver dag', s_language: 'Sprog'
+  };
+
+  var DICTS = { nb: nb, en: en, de: de, da: da };
+  var NAMES = [['nb', 'Norsk'], ['en', 'English'], ['de', 'Deutsch'], ['da', 'Dansk']];
+  var STORE_KEY = 'rideatdawn.lang';
+
+  function saved() {
+    try {
+      return root.localStorage.getItem(STORE_KEY);
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function fromBrowser() {
+    var l = (root.navigator && root.navigator.language || '').toLowerCase();
+    if (/^(nb|nn|no)\b/.test(l)) return 'nb';
+    if (/^da\b/.test(l)) return 'da';
+    if (/^de\b/.test(l)) return 'de';
+    return 'en';
+  }
+
+  var dict = en;
 
   function T(key) {
     var s = Object.prototype.hasOwnProperty.call(dict, key) ? dict[key] : en[key];
@@ -138,7 +279,21 @@
       return v == null ? '' : v;
     });
   }
-  T.months = dict.months;
-  T.lang = norwegian ? 'nb' : 'en';
+
+  /** Switches language. With remember = true the choice is kept in this browser. */
+  T.setLang = function (code, remember) {
+    if (!Object.prototype.hasOwnProperty.call(DICTS, code)) code = 'en';
+    dict = DICTS[code];
+    T.lang = code;
+    T.months = dict.months;
+    if (remember) {
+      try {
+        root.localStorage.setItem(STORE_KEY, code);
+      } catch (e) { /* not stored; lasts until the page is closed */ }
+    }
+  };
+  T.languages = NAMES;
+  T.keys = function (code) { return Object.keys(DICTS[code]); };
+  T.setLang(saved() || fromBrowser(), false);
   root.T = T;
 })(typeof self !== 'undefined' ? self : this);

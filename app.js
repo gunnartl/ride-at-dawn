@@ -548,6 +548,9 @@
       return '<label class="check plain" style="display:flex"><input type="checkbox" name="' + name + '"' + (on ? ' checked' : '') + '>' + esc(label) + '</label>';
     }
     openDialog('<h2>' + esc(T('settings')) + '</h2>' +
+      '<label class="field inline"><span>' + esc(T('s_language')) + '</span><select name="lang">' +
+      T.languages.map(function (l) { return '<option value="' + l[0] + '"' + (l[0] === T.lang ? ' selected' : '') + '>' + esc(l[1]) + '</option>'; }).join('') +
+      '</select></label>' +
       '<h3>' + esc(T('s_days')) + '</h3>' + box('planSat', T('s_plan_sat'), s.planDay[0]) + time('depSat', T('s_leave_sat'), s.departure[0]) +
       box('planSun', T('s_plan_sun'), s.planDay[1]) + time('depSun', T('s_leave_sun'), s.departure[1]) +
       '<h3>' + esc(T('s_visits')) + '</h3>' + num('service', T('s_service'), Math.round(s.service / 60), 5, 240) +
@@ -567,6 +570,10 @@
         departure: [Math.max(0, Fmt.parseTime(e.depSat.value)), Math.max(0, Fmt.parseTime(e.depSun.value))],
         planDay: [e.planSat.checked, e.planSun.checked], showMap: e.showMap.checked
       };
+      if (e.lang.value !== T.lang) {
+        T.setLang(e.lang.value, true);
+        applyLanguage();
+      }
       var before = planningSettings();
       Store.saveSettings(next);
       if (S.plan && planningSettings() !== before) setDirty(true);
@@ -626,12 +633,17 @@
   $('start').addEventListener('click', startDialog);
   $('plan').addEventListener('click', startPlanning);
 
-  function init() {
+  /** Everything outside render() that depends on the language. */
+  function applyLanguage() {
     document.documentElement.lang = T.lang;
     Fmt.hourUnit = T('hour_unit');
     Fmt.decimal = T('decimal');
     $('refresh').setAttribute('aria-label', T('refresh'));
     $('settings').setAttribute('aria-label', T('settings'));
+  }
+
+  function init() {
+    applyLanguage();
     S.target = C.Dates.upcomingSaturday(C.Dates.today(), C.Dates.secondsNow());
     render();
     loadData();

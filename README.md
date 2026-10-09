@@ -81,7 +81,8 @@ Google Cloud og ha en lav daglig kvote.
 - Under Alle markeder kan du huke av markeder som Besøkt, Hopp over, Må med lørdag eller
   Må med søndag.
 - Starten er der du er, eller en adresse du skriver inn på linjen over planleggingsknappen.
-- Norsk eller engelsk, etter språket på telefonen. Følger mørk modus.
+- Norsk, engelsk, tysk eller dansk. Språket velges i Innstillinger; ellers følger det telefonen.
+  Følger mørk modus.
 
 ## Filer
 
@@ -91,7 +92,7 @@ Google Cloud og ha en lav daglig kvote.
 | `core.js` | Tolking av oppføringer, helgefinner, ruteløser, planbygger, Maps-lenker. Ingen DOM, ingen nettverk |
 | `data.js` | Lokal lagring, lesing av datafilen, adresseoppslag, planleggingsløpet |
 | `app.js` | Skjermbilder og dialoger |
-| `i18n.js` | Norsk og engelsk tekst |
+| `i18n.js` | Tekst på norsk, engelsk, tysk og dansk |
 | `data/weekends.json` | Markeder og sykkeltider, skrevet av skriptet |
 | `tools/update-data.js` | Den eneste koden som bruker Google-nøkkelen |
 | `test/core.test.js` | `node test/core.test.js`: ruteløseren mot rå gjennomsøking, tolking, helger, lenker |

@@ -185,6 +185,8 @@ dialog h3 { margin: 20px 0 4px; font-size: 15px; font-weight: 800; }
 .field.inline { display: flex; align-items: center; gap: 12px; }
 .field.inline > span { flex: 1; margin: 0; }
 .field.inline input { width: 132px; flex: none; }
+.field select { min-height: 44px; padding: 8px 12px; background: var(--paper); border: 1.5px solid var(--line); border-radius: 10px; font-size: 16px; }
+.field.inline select { width: 132px; flex: none; }
 .help { font-size: 13px; color: var(--ink-soft); margin-top: 6px; }
 .error { color: var(--danger); font-size: 14px; margin-top: 8px; }
 .result { font-size: 14px; margin-top: 8px; overflow-wrap: anywhere; }
